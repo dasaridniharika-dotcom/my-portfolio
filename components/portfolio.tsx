@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import {
@@ -18,20 +18,13 @@ import {
   X,
 } from "lucide-react"
 
-const projectCategories = ["All Projects", "AI & Automation", "Full Stack Development", "Backend Development", "Web Applications", "IoT & Hardware"]
-
 const projects = [
-  { number: "01", title: "Nexora AI", category: "AI & AUTOMATION", filters: ["AI & Automation", "Full Stack Development"], status: "Prototype", description: "AI-powered customer support and business operations platform with AI-assisted workflows, workspace management and team collaboration.", problem: "Support teams need a shared way to handle repetitive customer requests and coordinate operations.", solution: "Nexora AI brings AI-assisted workflows, workspace management and team collaboration into one platform.", stack: ["AI", "React", "TypeScript", "Workspaces"], features: ["AI-assisted customer support workflows", "Workspace management", "Team collaboration"], image: "/projects/nexora-ai.png", alt: "Illustrative preview of an AI customer support workspace dashboard", repository: "", liveDemo: "" },
-  { number: "02", title: "Webhook Delivery Engine", category: "BACKEND · EVENT PROCESSING", filters: ["Backend Development", "Full Stack Development"], status: "In Progress", description: "Reliable event-driven webhook processing system with background processing, automatic retries, HMAC-SHA256 signatures and SQLite delivery logs.", problem: "Webhook consumers need reliable delivery and visibility when endpoints fail.", solution: "A background delivery engine retries failed events, verifies signatures and records each delivery.", stack: ["Python", "FastAPI", "SQLite", "HMAC-SHA256"], features: ["Background event processing", "Automatic retries", "HMAC-SHA256 signatures", "SQLite delivery logs"], image: "/projects/webhook-engine.png", alt: "Illustrative event pipeline and webhook delivery dashboard", repository: "", liveDemo: "" },
-  { number: "03", title: "StudyFlow AI", category: "AI · STUDENT TOOLS", filters: ["AI & Automation", "Full Stack Development", "Web Applications"], status: "Prototype", description: "Student study planning platform designed to organize uploaded syllabi, create topic checklists and generate structured study plans.", problem: "Turning a syllabus into a realistic and trackable study routine can feel overwhelming.", solution: "StudyFlow AI organizes syllabus topics into checklists and structured study plans.", stack: ["AI", "React", "TypeScript"], features: ["Syllabus organization", "Topic checklists", "Structured study plans"], image: "/projects/studyflow-ai.png", alt: "Illustrative student study planning dashboard", repository: "", liveDemo: "" },
-  { number: "04", title: "Soothely – Student Companion", category: "AI · WELLBEING", filters: ["AI & Automation", "Web Applications"], status: "Prototype", description: "AI-powered emotional support and personal growth companion designed for students.", problem: "Students benefit from accessible tools for reflection and personal growth.", solution: "Soothely offers a thoughtful digital companion for emotional support and self-reflection.", stack: ["AI", "React", "UX Design"], features: ["Student-focused support", "Personal growth prompts", "Calming interface"], image: "/projects/soothely.png", alt: "Illustrative student wellbeing application interface", repository: "", liveDemo: "" },
-  { number: "05", title: "KisanProcure", category: "FULL STACK · AGRICULTURE", filters: ["Full Stack Development", "Web Applications"], status: "Prototype", description: "Smart Mandi Slot Booking, Real-Time Queue Management and Transparent MSP Disbursement System developed for SIH Problem Statement 26032.", problem: "Mandi queues and opaque procurement workflows make planning and payments harder for farmers.", solution: "A digital system concept for slot booking, real-time queue management and transparent MSP disbursement.", stack: ["React", "Backend APIs", "Database"], features: ["Mandi slot booking", "Real-time queue management", "Transparent MSP disbursement"], image: "/projects/kisanprocure.png", alt: "Illustrative agricultural market queue and procurement dashboard", repository: "", liveDemo: "" },
-  { number: "06", title: "AI Research Assistant", category: "AI · BACKEND", filters: ["AI & Automation", "Backend Development", "Full Stack Development"], status: "In Progress", description: "AI-assisted research application using FastAPI, PostgreSQL and SQLAlchemy ORM.", problem: "Research work involves organizing information across multiple sources and tasks.", solution: "An AI-assisted application built on a Python API and relational data layer.", stack: ["FastAPI", "PostgreSQL", "SQLAlchemy", "AI"], features: ["AI-assisted research", "FastAPI backend", "PostgreSQL persistence"], image: "/projects/research-assistant.png", alt: "Illustrative AI research workspace dashboard", repository: "", liveDemo: "" },
-  { number: "07", title: "Smart Insect Detection System", category: "IOT · HARDWARE", filters: ["IoT & Hardware"], status: "Prototype", description: "IoT-based monitoring solution using ESP32-CAM, PIR, ultrasonic sensor, LDR and GSM.", problem: "Monitoring insects in agricultural settings can require timely, remote awareness.", solution: "A sensor-based prototype combines camera, motion, distance and light inputs with GSM connectivity.", stack: ["ESP32-CAM", "PIR", "Ultrasonic", "LDR", "GSM"], features: ["Camera-based monitoring", "Multi-sensor inputs", "GSM connectivity"], image: "/projects/insect-detection.png", alt: "Illustrative ESP32 camera and sensor system in a greenhouse", repository: "", liveDemo: "" },
-  { number: "08", title: "Weather Dashboard", category: "WEB APPLICATION · API", filters: ["Full Stack Development", "Web Applications"], status: "Completed", description: "Weather application using the OpenWeather API to display weather information and forecasts.", problem: "Weather conditions and forecasts are more useful when presented at a glance.", solution: "A web dashboard surfaces current weather information and forecast data from OpenWeather.", stack: ["JavaScript", "OpenWeather API", "CSS"], features: ["Current weather", "Forecast information", "API-powered data"], image: "/projects/weather-dashboard.png", alt: "Illustrative weather forecast dashboard", repository: "", liveDemo: "" },
-  { number: "09", title: "Student Expense Tracker", category: "WEB APPLICATION · FINANCE", filters: ["Full Stack Development", "Web Applications"], status: "Prototype", description: "Web-based application designed to help students track and manage their expenses.", problem: "Students need a simple way to understand day-to-day spending.", solution: "A focused expense tracking interface helps organize transactions and spending categories.", stack: ["JavaScript", "HTML", "CSS"], features: ["Expense tracking", "Spending categories", "Student-focused workflow"], image: "/projects/expense-tracker.png", alt: "Illustrative student spending tracker interface", repository: "", liveDemo: "" },
-  { number: "10", title: "Personal Portfolio Website", category: "FRONTEND · PERSONAL WEBSITE", filters: ["Full Stack Development", "Web Applications"], status: "In Progress", description: "Responsive personal website showcasing academic background, technical skills, projects and certifications.", problem: "A growing body of work deserves one clear, accessible home.", solution: "A responsive portfolio brings academic background, skills and projects together.", stack: ["Next.js", "React", "TypeScript", "CSS"], features: ["Responsive layouts", "Project gallery", "Academic and skills showcase"], image: "/projects/portfolio-preview.png", alt: "Illustrative dark personal portfolio design", repository: "", liveDemo: "" },
-  { number: "11", title: "Calculator Application", category: "FRONTEND · INTERACTION", filters: ["Full Stack Development", "Web Applications"], status: "Completed", description: "Interactive calculator application built using HTML, CSS and JavaScript.", problem: "Everyday calculations call for a clear and responsive interface.", solution: "A compact browser-based calculator handles familiar arithmetic interactions.", stack: ["HTML", "CSS", "JavaScript"], features: ["Basic arithmetic", "Interactive controls", "Responsive interface"], image: "/projects/calculator-app.png", alt: "Illustrative dark calculator interface", repository: "", liveDemo: "" },
+  { number: "01", title: "Nexora AI", subtitle: "AI-Powered Customer Support & Business Operations Platform.", category: "AI & BUSINESS OPERATIONS", description: "AI-powered customer support and business operations platform with AI-assisted workflows, workspace management and team collaboration.", stack: ["Python", "FastAPI", "React.js", "Switch", "Mattermost", "AI Agents"], features: ["AI-assisted workflows", "Workspace management", "Team collaboration"], image: "/projects/nexora-ai.png", alt: "Illustrative AI business operations dashboard with workflow automation and team collaboration", repository: "", liveDemo: "" },
+  { number: "02", title: "Webhook Delivery Engine", subtitle: "Reliable Event-Driven Webhook Processing System.", category: "BACKEND · EVENT PROCESSING", description: "Reliable event-driven webhook processing system with background processing, automatic retries, HMAC-SHA256 signatures and SQLite delivery logs.", stack: ["Python", "FastAPI", "React.js", "SQLite", "HMAC-SHA256"], features: ["Background processing", "Automatic retries", "HMAC-SHA256 signatures", "SQLite delivery logs"], image: "/projects/webhook-engine.png", alt: "Illustrative webhook monitoring dashboard with API requests, event delivery and retry statuses", repository: "", liveDemo: "" },
+  { number: "03", title: "StudyFlow AI", subtitle: "AI-Powered Student Study Planning Platform.", category: "AI · STUDENT TOOLS", description: "Student study planning platform designed to organize uploaded syllabi, create topic checklists and generate structured study plans.", stack: ["JavaScript", "HTML", "CSS", "Supabase"], features: ["Syllabus organization", "Topic checklists", "Structured study plans"], image: "/projects/studyflow-ai.png", alt: "Illustrative student dashboard for syllabus organization and study planning", repository: "", liveDemo: "" },
+  { number: "04", title: "Soothely – Student Companion", subtitle: "AI-Powered Emotional Support & Personal Growth Companion.", category: "AI · WELLBEING", description: "AI-powered emotional support and personal growth companion designed for students.", stack: ["TypeScript"], features: ["Emotional support", "Personal growth companion"], image: "/projects/soothely.png", alt: "Illustrative student companion application with a calming supportive interface", repository: "", liveDemo: "" },
+  { number: "05", title: "Personal Portfolio Website", subtitle: "Personal Profile and Skills Showcase.", category: "FRONTEND · PERSONAL WEBSITE", description: "Responsive personal website showcasing academic background, technical skills, projects and certifications.", stack: ["HTML", "CSS", "JavaScript"], features: ["Responsive personal website", "Academic background and skills", "Projects and certifications"], image: "/projects/portfolio-preview.png", alt: "Illustrative desktop and mobile portfolio website mockup", repository: "", liveDemo: "" },
+  { number: "06", title: "Calculator Application", subtitle: "Interactive Calculator Using Web Technologies.", category: "FRONTEND · INTERACTION", description: "Interactive calculator application built using HTML, CSS and JavaScript.", stack: ["HTML", "CSS", "JavaScript"], features: ["Interactive calculator", "HTML, CSS and JavaScript"], image: "/projects/calculator-app.png", alt: "Illustrative calculator interface with numeric buttons and arithmetic operators", repository: "", liveDemo: "" },
 ]
 
 const skillGroups = [
@@ -105,7 +98,7 @@ function Navigation({ light, onThemeToggle }: { light: boolean; onThemeToggle: (
         <button className="theme-toggle" onClick={onThemeToggle} aria-label={`Switch to ${light ? "dark" : "light"} theme`} title={`Switch to ${light ? "dark" : "light"} theme`}>
           {light ? <Moon size={15} /> : <Sun size={15} />}
         </button>
-        <a className="nav-contact" href="/Niharika-Resume.pdf" download="Niharika-Resume.pdf" onClick={() => setOpen(false)}>Download résumé <ArrowDown size={14} /></a>
+        <a className="nav-contact" href="/Niharika-Resume.pdf" target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>View CV <ArrowUpRight size={14} /></a>
       </nav>
     </header>
   )
@@ -121,7 +114,7 @@ function Hero() {
         <p className="hero-intro">Hi, I&apos;m Niharika — a developer who likes building useful things, asking better questions, and getting the details right.</p>
         <div className="hero-actions">
           <a className="button button-dark" href="#work">Explore my work <ArrowDownRight size={17} /></a>
-          <a className="text-link" href="/Niharika-Resume.pdf" download="Niharika-Resume.pdf">Download résumé <ArrowDown size={15} /></a>
+          <a className="text-link" href="/Niharika-Resume.pdf" target="_blank" rel="noreferrer" data-magnetic>View my CV <ArrowUpRight size={15} /></a>
         </div>
         <div className="hero-meta">
           <span><span className="status-dot" /> OPEN TO INTERNSHIPS & COLLABORATION</span>
@@ -129,9 +122,9 @@ function Hero() {
         </div>
       </motion.div>
       <motion.div className="hero-portrait-wrap" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.15 }}>
-        <div className="portrait-frame">
+        <motion.div className="portrait-frame" whileHover={{ rotate: 360, scale: 1.04 }} transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}>
           <Image src="/image.jpg" alt="Portrait of Dasari Niharika" fill priority sizes="(max-width: 720px) 80vw, 40vw" className="hero-portrait" />
-        </div>
+        </motion.div>
         <div className="portrait-caption"><span>FIG. 01</span><span>CURIOUS BY NATURE</span><span>© 2026</span></div>
         <div className="portrait-stamp" aria-hidden="true">GOOD<br />THINGS<br /><i>TAKE</i><br />THOUGHT.</div>
       </motion.div>
@@ -153,21 +146,21 @@ function About() {
       <div className="about-premium-grid">
         <div className="about-visual">
           <div className="about-orbit" aria-hidden="true" />
-          <div className="about-portrait"><Image src="/image.jpg" alt="Portrait of Dasari Niharika" fill sizes="(max-width: 700px) 70vw, 34vw" className="about-portrait-image" /></div>
+          <motion.div className="about-portrait" whileHover={{ rotate: 360, scale: 1.04 }} transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}><Image src="/image.jpg" alt="Portrait of Dasari Niharika" fill sizes="(max-width: 700px) 70vw, 34vw" className="about-portrait-image" /></motion.div>
           <span className="about-badge about-badge-top">Computer Science Undergraduate</span>
           <span className="about-badge about-badge-bottom">AWS Builder Community</span>
         </div>
         <div className="about-copy">
           <h2>More Than Just Code — I&apos;m a <em>Builder, Learner &amp; Problem Solver.</em></h2>
           <p>Hi, I&apos;m Dasari Niharika, a Computer Science and Engineering student at Lovely Professional University, Punjab.</p>
-          <p>I&apos;m passionate about turning ideas into practical digital solutions. My interests include Full Stack Development, Backend Engineering, Artificial Intelligence and emerging technologies.</p>
-          <p>Through personal projects and technical challenges, I&apos;ve been exploring how software can solve real-world problems. I enjoy experimenting with new tools, learning different technologies and continuously improving my development skills.</p>
-          <p>I&apos;m also an active AWS Builder community user and currently exploring AWS cloud technologies, cloud computing fundamentals and cloud infrastructure. I&apos;m interested in understanding how modern applications are deployed, scaled and managed using cloud technologies.</p>
-          <p>Beyond coding, I enjoy participating in hackathons, collaborating on technical projects and sharing knowledge through community activities.</p>
-          <p>My goal is to become a skilled software engineer who builds meaningful, scalable and innovative technology solutions.</p>
+          <p>I&apos;m passionate about transforming ideas into practical digital solutions. My interests include Full Stack Development, Backend Engineering, Artificial Intelligence and emerging technologies.</p>
+          <p>I enjoy developing applications, exploring new technologies, participating in hackathons and solving real-world problems through programming.</p>
+          <p>I&apos;m also an active AWS Builder community user, currently learning AWS cloud technologies, cloud computing fundamentals and cloud infrastructure. I&apos;m interested in understanding how modern applications are developed, deployed and scaled using cloud technologies.</p>
+          <p>Beyond coding, I enjoy collaborating on technical projects, learning continuously and exploring innovative ideas.</p>
+          <p>My goal is to become a skilled software engineer who builds meaningful, scalable and impactful technology solutions.</p>
           <div className="about-info-grid">{aboutCards.map(([label, title, subtitle]) => <article className="about-info-card" key={label}><span>{label}</span><strong>{title}</strong><small>{subtitle}</small></article>)}</div>
           <div className="exploring-panel"><span className="exploring-label">CURRENTLY EXPLORING</span><div>{["AWS Cloud Computing", "Backend Engineering", "AI-powered applications", "Full Stack Development"].map((item) => <span key={item}>{item}</span>)}</div></div>
-          <a className="text-link" href="/Niharika-Resume.pdf" download="Niharika-Resume.pdf">Download my résumé <ArrowDown size={15} /></a>
+          <a className="button button-dark about-cv-button" href="/Niharika-Resume.pdf" target="_blank" rel="noreferrer" data-magnetic>View My CV <ArrowUpRight size={15} /></a>
         </div>
       </div>
       <div className="about-footnote"><span>01 / THE SHORT VERSION</span><span>LEARNING BY MAKING, ALWAYS.</span></div>
@@ -176,17 +169,15 @@ function About() {
 }
 
 function Work() {
-  const [activeCategory, setActiveCategory] = useState("All Projects")
   const [selectedProject, setSelectedProject] = useState<(typeof projects)[number] | null>(null)
-  const visibleProjects = activeCategory === "All Projects" ? projects : projects.filter((project) => project.filters.includes(activeCategory))
+  const visibleProjects = projects
   return (
     <section className="work-section section-pad" id="work">
       <div className="section-topline">
         <div><SectionLabel index="02">SELECTED WORK</SectionLabel><h2>Small ideas,<br /><em>real momentum.</em></h2></div>
-        <p className="section-aside">Eleven experiments in building useful things — each one a chance to learn by making.</p>
+        <p className="section-aside">A selection of six projects across AI, backend systems and web development.</p>
       </div>
-      <div className="project-filter" role="group" aria-label="Filter projects">{projectCategories.map((category) => <button type="button" key={category} aria-pressed={activeCategory === category} className={activeCategory === category ? "is-active" : ""} onClick={() => setActiveCategory(category)}>{category}</button>)}</div>
-      <p className="project-count" aria-live="polite">Showing {visibleProjects.length} of {projects.length} projects</p>
+      <p className="project-count" aria-live="polite">Showing all {visibleProjects.length} projects</p>
       <div className="project-list">
         {visibleProjects.map((project, index) => (
           <motion.article className="project-card" key={project.number} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.08 }} variants={fadeUp} transition={{ duration: 0.45, delay: (index % 3) * 0.05 }}>
@@ -195,16 +186,17 @@ function Work() {
               <span className="illustration-label">ILLUSTRATIVE PREVIEW</span>
             </button>
             <div className="project-info">
-              <div className="project-overline"><span>{project.number}</span><span>{project.category}</span><span className="project-status">{project.status}</span></div>
+              <div className="project-overline"><span>{project.number}</span><span>{project.category}</span></div>
               <div className="project-title-row"><h3>{project.title}</h3><ArrowUpRight className="project-arrow" size={20} aria-hidden="true" /></div>
+              <p className="project-subtitle">{project.subtitle}</p>
               <p>{project.description}</p>
               <div className="tag-list">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
-              <div className="project-card-actions"><button type="button" onClick={() => setSelectedProject(project)}>View Details <ArrowUpRight size={13} /></button>{project.repository ? <a href={project.repository} target="_blank" rel="noreferrer" aria-label={`GitHub repository for ${project.title}`}><Github size={14} /> GitHub</a> : <span className="link-pending"><Github size={14} /> GitHub · pending</span>}{project.liveDemo ? <a href={project.liveDemo} target="_blank" rel="noreferrer">Live Demo <ArrowUpRight size={13} /></a> : <span className="link-pending">Live Demo · pending</span>}</div>
+              <div className="project-card-actions"><button type="button" onClick={() => setSelectedProject(project)}>View Details <ArrowUpRight size={13} /></button>{project.repository ? <a href={project.repository} target="_blank" rel="noreferrer" aria-label={`GitHub repository for ${project.title}`}><Github size={14} /> GitHub Repository</a> : <button type="button" className="link-placeholder" disabled title="Add a repository URL to enable this link"><Github size={14} /> GitHub Repository</button>}{project.liveDemo ? <a href={project.liveDemo} target="_blank" rel="noreferrer">Live Demo <ArrowUpRight size={13} /></a> : <button type="button" className="link-placeholder" disabled title="Add a live demo URL to enable this link">Live Demo <ArrowUpRight size={13} /></button>}</div>
             </div>
           </motion.article>
         ))}
       </div>
-      {selectedProject && <div className="project-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProject(null) }}><section className="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title"><button className="modal-close" type="button" onClick={() => setSelectedProject(null)} aria-label="Close project details"><X size={19} /></button><div className="modal-image"><Image src={selectedProject.image} alt={selectedProject.alt} fill sizes="(max-width: 700px) 90vw, 720px" /></div><div className="modal-content"><span className="mini-label">{selectedProject.category} · {selectedProject.status.toUpperCase()}</span><h3 id="project-modal-title">{selectedProject.title}</h3><p>{selectedProject.description}</p><div className="modal-detail-grid"><div><h4>Problem</h4><p>{selectedProject.problem}</p></div><div><h4>Solution</h4><p>{selectedProject.solution}</p></div></div><h4>Key features</h4><ul>{selectedProject.features.map((feature) => <li key={feature}>{feature}</li>)}</ul><h4>Technology</h4><div className="tag-list">{selectedProject.stack.map((item) => <span key={item}>{item}</span>)}</div><div className="project-links modal-links">{selectedProject.repository ? <a href={selectedProject.repository} target="_blank" rel="noreferrer">GitHub repository <ArrowUpRight size={13} /></a> : <span>GitHub link to be added</span>}{selectedProject.liveDemo ? <a href={selectedProject.liveDemo} target="_blank" rel="noreferrer">Live demo <ArrowUpRight size={13} /></a> : <span>Live demo link to be added</span>}</div></div></section></div>}
+      {selectedProject && <div className="project-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProject(null) }}><section className="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title"><button className="modal-close" type="button" onClick={() => setSelectedProject(null)} aria-label="Close project details"><X size={19} /></button><div className="modal-image"><Image src={selectedProject.image} alt={selectedProject.alt} fill sizes="(max-width: 700px) 90vw, 720px" /></div><div className="modal-content"><span className="mini-label">{selectedProject.category}</span><h3 id="project-modal-title">{selectedProject.title}</h3><p className="project-subtitle">{selectedProject.subtitle}</p><p>{selectedProject.description}</p><h4>Features</h4><ul>{selectedProject.features.map((feature) => <li key={feature}>{feature}</li>)}</ul><h4>Technology</h4><div className="tag-list">{selectedProject.stack.map((item) => <span key={item}>{item}</span>)}</div><div className="project-links modal-links">{selectedProject.repository ? <a href={selectedProject.repository} target="_blank" rel="noreferrer">GitHub repository <ArrowUpRight size={13} /></a> : <span>Repository URL placeholder</span>}{selectedProject.liveDemo ? <a href={selectedProject.liveDemo} target="_blank" rel="noreferrer">Live demo <ArrowUpRight size={13} /></a> : <span>Live demo URL placeholder</span>}</div></div></section></div>}
       <a className="all-projects-link" href="https://github.com/dasaridniharika-dotcom" target="_blank" rel="noreferrer">More experiments on GitHub <ArrowUpRight size={16} /></a>
     </section>
   )
@@ -285,7 +277,66 @@ function Contact() {
   )
 }
 
+function CustomCursor() {
+  const dotRef = useRef<HTMLSpanElement>(null)
+  const ringRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const touchDevice = window.matchMedia("(hover: none), (pointer: coarse)")
+    if (reducedMotion.matches || touchDevice.matches) return
+
+    let targetX = 0
+    let targetY = 0
+    let ringX = 0
+    let ringY = 0
+    let frame = 0
+    let activeMagnetic: HTMLElement | null = null
+    const animateRing = () => {
+      ringX += (targetX - ringX) * 0.18
+      ringY += (targetY - ringY) * 0.18
+      if (ringRef.current) ringRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`
+      frame = window.requestAnimationFrame(animateRing)
+    }
+    const onPointerMove = (event: PointerEvent) => {
+      targetX = event.clientX
+      targetY = event.clientY
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%)`
+        dotRef.current.classList.add("is-visible")
+      }
+      ringRef.current?.classList.add("is-visible")
+      const target = event.target instanceof Element ? event.target.closest("a, button, [role='button'], input, textarea") : null
+      ringRef.current?.classList.toggle("is-hovering", Boolean(target))
+      const magnetic = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-magnetic]") : null
+      if (activeMagnetic && activeMagnetic !== magnetic) activeMagnetic.style.translate = ""
+      activeMagnetic = magnetic
+      if (magnetic) {
+        const bounds = magnetic.getBoundingClientRect()
+        magnetic.style.translate = `${(event.clientX - bounds.left - bounds.width / 2) * 0.12}px ${(event.clientY - bounds.top - bounds.height / 2) * 0.12}px`
+      }
+    }
+    const onPointerLeave = () => {
+      dotRef.current?.classList.remove("is-visible")
+      ringRef.current?.classList.remove("is-visible", "is-hovering")
+      if (activeMagnetic) activeMagnetic.style.translate = ""
+      activeMagnetic = null
+    }
+    window.addEventListener("pointermove", onPointerMove)
+    document.documentElement.addEventListener("pointerleave", onPointerLeave)
+    frame = window.requestAnimationFrame(animateRing)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener("pointermove", onPointerMove)
+      document.documentElement.removeEventListener("pointerleave", onPointerLeave)
+      document.querySelectorAll<HTMLElement>("[data-magnetic]").forEach((element) => { element.style.translate = "" })
+    }
+  }, [])
+
+  return <><span className="custom-cursor-dot" ref={dotRef} aria-hidden="true" /><span className="custom-cursor-ring" ref={ringRef} aria-hidden="true" /></>
+}
+
 export default function Portfolio() {
   const [light, setLight] = useState(false)
-  return <main className={light ? "portfolio light-theme" : "portfolio"}><Navigation light={light} onThemeToggle={() => setLight(!light)} /><Hero /><About /><Work /><Background /><Beyond /><Contact /></main>
+  return <main className={light ? "portfolio light-theme" : "portfolio"}><CustomCursor /><Navigation light={light} onThemeToggle={() => setLight(!light)} /><Hero /><About /><Work /><Background /><Beyond /><Contact /></main>
 }
