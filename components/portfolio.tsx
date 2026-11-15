@@ -104,6 +104,72 @@ function Navigation({ light, onThemeToggle }: { light: boolean; onThemeToggle: (
   )
 }
 
+function RotatingPortrait({ className, children }: { className: string; children: React.ReactNode }) {
+  const portraitRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const portrait = portraitRef.current
+    if (!portrait || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+
+    let animation: Animation | null = null
+    let isHovered = false
+    let velocity = 0
+    let previousTime = 0
+    let frame = 0
+
+    const easeRotation = (time: number) => {
+      const elapsed = previousTime ? Math.min(time - previousTime, 40) : 16
+      previousTime = time
+      const targetVelocity = isHovered ? 1 : 0
+      velocity += (targetVelocity - velocity) * (1 - Math.exp(-elapsed / (isHovered ? 180 : 360)))
+
+      if (animation) {
+        if (!isHovered && velocity < 0.005) {
+          animation.pause()
+          animation.playbackRate = 0
+          velocity = 0
+          frame = 0
+          previousTime = 0
+          return
+        }
+        animation.playbackRate = velocity
+      }
+
+      frame = window.requestAnimationFrame(easeRotation)
+    }
+
+    const onPointerEnter = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return
+      if (!animation) {
+        animation = portrait.animate(
+          [{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }],
+          { duration: 9000, iterations: Infinity, easing: "linear" },
+        )
+      }
+      isHovered = true
+      animation.play()
+      if (!frame) frame = window.requestAnimationFrame(easeRotation)
+    }
+
+    const onPointerLeave = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return
+      isHovered = false
+      if (!frame && animation) frame = window.requestAnimationFrame(easeRotation)
+    }
+
+    portrait.addEventListener("pointerenter", onPointerEnter)
+    portrait.addEventListener("pointerleave", onPointerLeave)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      animation?.cancel()
+      portrait.removeEventListener("pointerenter", onPointerEnter)
+      portrait.removeEventListener("pointerleave", onPointerLeave)
+    }
+  }, [])
+
+  return <div ref={portraitRef} className={className}>{children}</div>
+}
+
 function Hero() {
   return (
     <section className="hero" id="top">
@@ -122,9 +188,9 @@ function Hero() {
         </div>
       </motion.div>
       <motion.div className="hero-portrait-wrap" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.15 }}>
-        <motion.div className="portrait-frame" whileHover={{ rotate: 360, scale: 1.04 }} transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}>
+        <RotatingPortrait className="portrait-frame">
           <Image src="/image.jpg" alt="Portrait of Dasari Niharika" fill priority sizes="(max-width: 720px) 80vw, 40vw" className="hero-portrait" />
-        </motion.div>
+        </RotatingPortrait>
         <div className="portrait-caption"><span>FIG. 01</span><span>CURIOUS BY NATURE</span><span>© 2026</span></div>
         <div className="portrait-stamp" aria-hidden="true">GOOD<br />THINGS<br /><i>TAKE</i><br />THOUGHT.</div>
       </motion.div>
@@ -146,7 +212,7 @@ function About() {
       <div className="about-premium-grid">
         <div className="about-visual">
           <div className="about-orbit" aria-hidden="true" />
-          <motion.div className="about-portrait" whileHover={{ rotate: 360, scale: 1.04 }} transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }}><Image src="/image.jpg" alt="Portrait of Dasari Niharika" fill sizes="(max-width: 700px) 70vw, 34vw" className="about-portrait-image" /></motion.div>
+          <RotatingPortrait className="about-portrait"><Image src="/image.jpg" alt="Portrait of Dasari Niharika" fill sizes="(max-width: 700px) 70vw, 34vw" className="about-portrait-image" /></RotatingPortrait>
           <span className="about-badge about-badge-top">Computer Science Undergraduate</span>
           <span className="about-badge about-badge-bottom">AWS Builder Community</span>
         </div>
