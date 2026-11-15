@@ -3,6 +3,10 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Dasari Niharika — Software Developer",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
   description:
     "Portfolio of Dasari Niharika, a Computer Science and Engineering undergraduate at Lovely Professional University, building full-stack and backend software.",
   openGraph: {
